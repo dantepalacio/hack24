@@ -1,6 +1,7 @@
+from google.cloud import vision
+
 def detect_safe_search(path):
     """Detects unsafe features in the file."""
-    from google.cloud import vision
 
     client = vision.ImageAnnotatorClient()
 
