@@ -1,6 +1,5 @@
-
-"""Detects text in the file."""
 from google.cloud import vision
+
 
 def get_text(path):
 
@@ -13,9 +12,11 @@ def get_text(path):
 
     response = client.text_detection(image=image)
     texts = response.text_annotations
-    
-    answer = texts[0].description
 
+    if texts != []:
+        answer = texts[0].description
+    else:
+        answer = 0
 
 
     if response.error.message:
@@ -24,7 +25,7 @@ def get_text(path):
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
 
-    return answer
+    return {'text': answer}
 
-
-print(get_text('1.jpg'))
+if __name__ == "__main__":
+    print(get_text('2.jpg'))

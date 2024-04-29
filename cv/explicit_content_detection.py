@@ -1,8 +1,6 @@
 from google.cloud import vision
 
-def detect_safe_search(path):
-    """Detects unsafe features in the file."""
-
+def detect_explicit_content(path):
     client = vision.ImageAnnotatorClient()
 
     with open(path, "rb") as image_file:
@@ -22,16 +20,16 @@ def detect_safe_search(path):
         "0.8",
         "1",
     )
-    print("Safe search:")
 
-    print(f"adult: {likelihood_name[safe.adult]}")
-    print(f"medical: {likelihood_name[safe.medical]}")
-    print(f"spoofed: {likelihood_name[safe.spoof]}")
-    print(f"violence: {likelihood_name[safe.violence]}")
-    print(f"racy: {likelihood_name[safe.racy]}")
 
     if response.error.message:
         raise Exception(
             "{}\nFor more info on error messages, check: "
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
+
+    return {'adult': likelihood_name[safe.adult], 'medical': likelihood_name[safe.medical], 'spoofed': likelihood_name[safe.spoof], 'violence': likelihood_name[safe.violence], 'racy': likelihood_name[safe.racy]}
+
+
+if __name__ == "__main__":
+    print(detect_explicit_content('1.jpg'))
