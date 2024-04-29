@@ -32,7 +32,7 @@ def detect_explicit_comment(text:str) -> str:
 
 
 
-comment = 'Наконец-то весна, цветет сакура'
+comment = 'SODJiuAAIsФЫВоывыва ывафы счч'
 
 print('--------------------------')
 print(comment)
