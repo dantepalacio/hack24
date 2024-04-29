@@ -6,7 +6,7 @@ def get_text(path):
 
     client = vision.ImageAnnotatorClient()
 
-    with open('1.jpg', "rb") as image_file:
+    with open(path, "rb") as image_file:
         content = image_file.read()
 
     image = vision.Image(content=content)
