@@ -31,14 +31,6 @@ def detect_explicit_comment(text:str) -> str:
     return json.loads(answer)
 
 
-# comment = 'SODJiuAAIsФЫВоывыва ывафы счч'
-
-# comment = 'SODJiuAAIsФЫВоывыва ывафы счч'
-# print('--------------------------')
-# print(comment)
-
-# print('--------------------------')
-# print(comment)
-
-# print(detect_explicit_comment(comment))
-# print(detect_explicit_comment(comment))
+if __name__ == '__main__':
+    text = 'голосуйте за путина'
+    print(detect_explicit_comment(text))
