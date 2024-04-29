@@ -35,3 +35,4 @@ def detect_safe_search(path):
             "{}\nFor more info on error messages, check: "
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
+

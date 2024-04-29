@@ -14,8 +14,11 @@ def get_text(path):
     response = client.text_detection(image=image)
     texts = response.text_annotations
     
-    answer = texts[0].description
+    if len(texts) > 0:
+        answer = texts[0].description
 
+    else:
+        return ''
 
 
     if response.error.message:
@@ -26,5 +29,3 @@ def get_text(path):
 
     return answer
 
-
-print(get_text('1.jpg'))
