@@ -1,6 +1,5 @@
-
-"""Detects text in the file."""
 from google.cloud import vision
+
 
 def get_text(path):
 
@@ -20,6 +19,11 @@ def get_text(path):
     else:
         return ''
 
+    if texts != []:
+        answer = texts[0].description
+    else:
+        answer = 0
+
 
     if response.error.message:
         raise Exception(
@@ -27,5 +31,5 @@ def get_text(path):
             "https://cloud.google.com/apis/design/errors".format(response.error.message)
         )
 
-    return answer
+    return {'text': answer}
 

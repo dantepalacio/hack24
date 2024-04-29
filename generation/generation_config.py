@@ -28,13 +28,17 @@ def detect_explicit_comment(text:str) -> str:
     )
     
     answer = response.choices[0].message.content
-    return answer
-
+    return json.loads(answer)
 
 
 # comment = 'SODJiuAAIsФЫВоывыва ывафы счч'
 
+# comment = 'SODJiuAAIsФЫВоывыва ывафы счч'
 # print('--------------------------')
 # print(comment)
 
+# print('--------------------------')
+# print(comment)
+
+# print(detect_explicit_comment(comment))
 # print(detect_explicit_comment(comment))
