@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 
@@ -5,11 +6,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from cv.ocr import get_text
 from cv.explicit_content_detection import detect_explicit_content
-from generation.generation_config import detect_explicit_comment
-from generation.generation_config import get_text_from_audio
+from generation.generation_config import detect_explicit_comment, get_text_from_audio, detect_spam_comment
 from cv.take_frames import detect_explicit_content_from_video
-from utils.utils import explicit_content_check_from_image
-from utils.utils import explicit_content_check_from_text
+from utils.utils import explicit_content_check_from_image, explicit_content_check_from_text
+
 
 
 
@@ -20,7 +20,18 @@ def check_post(content: dict) -> bool:
         comment_result = detect_explicit_comment(content['text'])
         comment_result = explicit_content_check_from_text(comment_result)
 
-        answer['text'] = comment_result
+        is_spam = detect_spam_comment(content['text'])
+        print(f'SPAMM TEST\n {is_spam}')
+        if comment_result['is_explicit'] == 'ban':
+            if is_spam['status']:
+                comment_result['reasons'] = comment_result['reasons'] + is_spam['reasons']
+        else:
+            if is_spam['status']:
+                comment_result['is_explicit'] = 'ban'
+                comment_result['reasons'] = comment_result['reasons'] + is_spam['reasons']
+
+    
+        answer['text'] = [comment_result]
     
     if content['image'] is not None:
         result_for_image = detect_explicit_content(content['image'])
@@ -44,13 +55,18 @@ def check_post(content: dict) -> bool:
 
         temp_explicit_audio_content = get_text_from_audio(content['video'])
 
-        if results_for_audio['text'] == '':
+        temp_explicit_audio_content = temp_explicit_audio_content['text']
+        
+        if len(temp_explicit_audio_content) == 0:
             results_for_audio = {'is_explicit': 'publish', 'reasons': []}
+        else:
+            results_for_audio = detect_explicit_comment(temp_explicit_audio_content)
+            results_for_audio = explicit_content_check_from_text(results_for_audio)
 
-        results_for_audio = detect_explicit_comment(temp_explicit_audio_content)
 
         answer['video'] = result_for_video
-        answer['audio'] = results_for_audio
+        answer['audio'] = [results_for_audio]
+        
 
 
     return answer
