@@ -42,19 +42,19 @@ def check_post(content: dict) -> bool:
     if content['video'] is not None:
         result_for_video = detect_explicit_content_from_video(content['video'])
 
-        temp_explicit_audio_content = get_text_from_audio(content['video'])
+        # temp_explicit_audio_content = get_text_from_audio(content['video'])
 
-        if results_for_audio['text'] == '':
-            results_for_audio = {'is_explicit': 'publish', 'reasons': []}
+        # if results_for_audio['text'] == '':
+        #     results_for_audio = {'is_explicit': 'publish', 'reasons': []}
 
-        results_for_audio = detect_explicit_comment(temp_explicit_audio_content)
+        # results_for_audio = detect_explicit_comment(temp_explicit_audio_content)
 
         answer['video'] = result_for_video
-        answer['audio'] = results_for_audio
+        # answer['audio'] = results_for_audio
 
 
     return answer
 
 
 if __name__ == "__main__":
-    print(check_post({'text': 'я люблю гнилых оленей', 'image': '2.jpg', 'video': 'dear.mp4'}))
+    print(check_post({'text': None, 'image': None, 'video': None}))

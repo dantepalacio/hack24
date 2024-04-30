@@ -73,6 +73,9 @@ def get_text_from_audio(path):
     file=audio_file, 
     response_format="text"
     )
+
+    os.remove('audio.wav')
+
     return {'text': transcription}
 
 
