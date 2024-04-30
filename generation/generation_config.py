@@ -5,7 +5,7 @@ import openai
 from dotenv import load_dotenv
 
 
-from prompts.system_prompt import JSON_EXPLICIT_COMMENT_SYSTEM_PROMPT, JSON_SPAM_COMMENT_SYSTEM_PROMPT
+from generation.prompts.system_prompt import JSON_EXPLICIT_COMMENT_SYSTEM_PROMPT, JSON_SPAM_COMMENT_SYSTEM_PROMPT
 
 
 load_dotenv()

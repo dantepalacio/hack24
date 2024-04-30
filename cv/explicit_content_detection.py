@@ -29,7 +29,11 @@ def detect_explicit_content(path):
         )
 
 
-    return {'adult': likelihood_name[safe.adult], 'medical': likelihood_name[safe.medical], 'spoofed': likelihood_name[safe.spoof], 'violence': likelihood_name[safe.violence], 'racy': likelihood_name[safe.racy]}
+    return {'adult': likelihood_name[safe.adult], 
+            'medical': likelihood_name[safe.medical], 
+            'spoofed': likelihood_name[safe.spoof], 
+            'violence': likelihood_name[safe.violence], 
+            'racy': likelihood_name[safe.racy]}
 
 
 if __name__ == "__main__":

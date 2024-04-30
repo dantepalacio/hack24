@@ -47,7 +47,7 @@ def process_post_request():
     }
 
     result_for_text, result_for_image, result_for_text_from_image = check_post(post_dict)
-
+    os.remove('uploads\\1.jpg')######################
     if result_for_text['is_explicit'] == 'ban' or result_for_image['is_explicit']=='ban' or result_for_text_from_image['is_explicit']=='ban':
         return jsonify({'status': 'ban', 'reason': [{'comment':result_for_text['reasons'], 'image':result_for_image['reasons'], 'text_in_image':result_for_text_from_image['reasons']}]}), 200
     

@@ -4,7 +4,17 @@ __pycache__/
 *$py.class
 
 *.jpg
-
+*.mp4
+*.MP4
+*.m4v
+*.mov
+*.mp4
+*.m4a
+*.3gp
+*.3g2
+*.mj2
+*.avi
+*.db
 # C extensions
 *.so
 
