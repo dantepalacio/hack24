@@ -17,7 +17,7 @@ def get_text(path):
         answer = texts[0].description
 
     else:
-        return ''
+        return {'text': ''}
 
     if texts != []:
         answer = texts[0].description

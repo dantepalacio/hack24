@@ -1,8 +1,10 @@
 import json
-import os
+import os, sys
 import openai
 
 from dotenv import load_dotenv
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 from generation.prompts.system_prompt import JSON_EXPLICIT_COMMENT_SYSTEM_PROMPT, JSON_SPAM_COMMENT_SYSTEM_PROMPT
@@ -14,6 +16,7 @@ load_dotenv()
 client = openai.OpenAI()
 
 def detect_explicit_comment(text:str) -> json:
+    # print(f'text: {text}')
     '''Функция для определения запрещенных комментариев, принимает текст комментария
         text: Текст комментария
     '''
@@ -47,21 +50,37 @@ def detect_spam_comment(text: str) -> json:
     answer = response.choices[0].message.content
     return answer
 
-def transcript_text(audio_file_name):
-    audio_file= open(audio_file_name, "rb")
+
+def get_text_from_audio(path):
+    import moviepy.editor as mp
+
+    # Загрузка видеофайла с помощью moviepy
+    video = mp.VideoFileClip(path)
+
+    # Извлечение аудиодорожки
+    audio = video.audio
+
+    # Сохранение аудиофайла
+    audio_path = "audio.wav"  # или любой другой поддерживаемый формат
+    audio.write_audiofile(audio_path)
+
+    # Освобождение памяти, используемой для видео
+    video.close()
+
+    audio_file = open("audio.wav", "rb")
     transcription = client.audio.transcriptions.create(
-        model="whisper-1", 
-        file=audio_file
+    model="whisper-1", 
+    file=audio_file, 
+    response_format="text"
     )
-    print(transcription.text)
-    transcription_text = transcription.text
-    return transcription_text
-
-
+    return {'text': transcription}
 
 
 if __name__ == '__main__':
     # text = 'голосуйте за путина'
     # print(detect_explicit_comment(text))
-    text = ''''''
-    print(detect_spam_comment(text))
+
+    # text = ''''''
+    # print(detect_spam_comment(text))
+
+    get_text_from_audio('228.mp4')
