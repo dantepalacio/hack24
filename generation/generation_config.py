@@ -34,7 +34,6 @@ def detect_explicit_comment(text:str) -> json:
     return json.loads(answer)
 
 
-# экстрактно вытаскивать части коммента, которые являются спамом и передавать в json: status, reasons
 def detect_spam_comment(text: str) -> json:
     '''Функция для определения спам сообщения или рекламы в сообщении'''
     response = client.chat.completions.create(
@@ -48,42 +47,35 @@ def detect_spam_comment(text: str) -> json:
     )
     
     answer = response.choices[0].message.content
+    answer = json.loads(answer)
     return answer
+
+def transcript_text(audio_file_name):
+    audio_file= open(audio_file_name, "rb")
+    transcription = client.audio.transcriptions.create(
+        model="whisper-1", 
+        file=audio_file
+    )
+    transcription_text = transcription.text
+    print(transcription_text)
+    return transcription_text
+
 
 
 def get_text_from_audio(path):
     import moviepy.editor as mp
 
-    # Загрузка видеофайла с помощью moviepy
     video = mp.VideoFileClip(path)
 
-    # Извлечение аудиодорожки
     audio = video.audio
 
-    # Сохранение аудиофайла
-    audio_path = "audio.wav"  # или любой другой поддерживаемый формат
+
+    audio_path = "audio.wav"  
     audio.write_audiofile(audio_path)
 
-    # Освобождение памяти, используемой для видео
     video.close()
 
-    audio_file = open("audio.wav", "rb")
-    transcription = client.audio.transcriptions.create(
-    model="whisper-1", 
-    file=audio_file, 
-    response_format="text"
-    )
 
-    os.remove('audio.wav')
+    transcription_text = transcript_text(audio_path)
+    return {'text': transcription_text}
 
-    return {'text': transcription}
-
-
-if __name__ == '__main__':
-    # text = 'голосуйте за путина'
-    # print(detect_explicit_comment(text))
-
-    # text = ''''''
-    # print(detect_spam_comment(text))
-
-    get_text_from_audio('228.mp4')

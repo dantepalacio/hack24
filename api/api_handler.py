@@ -1,80 +1,95 @@
 import os
-import json
 import sys
-import base64
 
+from uuid import uuid4
 
 from flask import Flask, request, jsonify
 
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from generation.generation_config import detect_explicit_comment
-from cv.ocr import get_text
-from cv.explicit_content_detection import detect_explicit_content
-from utils.b64_decode import save_image_from_base64
-from utils.utils import check_post
+
+from cv.check import check_post
+from utils.utils import generate_random_int_id
+from sqlite.db_operations import insert_data, view_table
 
 app = Flask(__name__)
 
+app.config['UPLOAD_FOLDER'] = 'uploads/'
+
 @app.route('/process_post_request', methods=['POST'])
 def process_post_request():
-    data = request.json
 
-    text = data.get('text')
-    attachment = data.get('attachment')
+    if not request:
+        return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
+    
+
+    image = request.files['attachment']
+    image_filename = str(uuid4())+".jpg"
+    image_path = f'uploads/{image_filename}'
+    image.save(image_path)
 
 
-    if attachment is not None:
-        image_path = save_image_from_base64(base64_string=attachment, filename='1')
+    video = request.files['video']
+    video_filename = str(uuid4())+".mp4"
+    video_path = f'uploads/{video_filename}'
+    video.save(video_path)
 
 
-        # detect_explicit_content(image_path)
+    text = request.form.get('text')
 
-        # recognized_text_from_image = get_text(image_path)
-
-        # if len(recognized_text_from_image) > 0:
-        #     print(detect_explicit_comment(recognized_text_from_image))
-        # else:
-        #     print('Текст в изображении не обнаружен')
-
-        
-    # with open(image_path, "rb") as image_file:
-    #     image_content = image_file.read()
 
     post_dict = {
         "text": text,
-        "image": image_path
+        "image": image_path,
+        "video": video_path
     }
 
-    result_for_text, result_for_image, result_for_text_from_image = check_post(post_dict)
-    os.remove('uploads\\1.jpg')######################
-    if result_for_text['is_explicit'] == 'ban' or result_for_image['is_explicit']=='ban' or result_for_text_from_image['is_explicit']=='ban':
-        return jsonify({'status': 'ban', 'reason': [{'comment':result_for_text['reasons'], 'image':result_for_image['reasons'], 'text_in_image':result_for_text_from_image['reasons']}]}), 200
+    answer = check_post(post_dict)
+
+
+    text_result = answer['text']
+    print(f'TEXT:{text_result}')
+
+    overall_image_result = answer['image']
+    image_result = overall_image_result[0]
+    ocr_image_result = overall_image_result[1]
+    print(f'IMAGE:{image_result}')
+    print(f'OCR IMAGE:{ocr_image_result}')
+
+    print()
+    overall_video_result = answer['video']
+    print(f'VIDEO:{overall_video_result[0]}')
+    print(f'VIDEO OCR:{overall_video_result[1]}')
+    
+    audio_result = answer['audio']
+    print(f'AUDIO FROM VIDEO:{audio_result}')
+
+
+
+
+    overall_reasons = []
+    temp_status = 'publish'
+    for res_key, res_val in answer.items():
+        for i in res_val:
+            if i['is_explicit'] == 'ban':
+                temp_status = 'ban'
+                overall_reasons += i['reasons']
+            elif i['is_explicit'] == 'same':
+                temp_status = 'same'
+                overall_reasons += i['reasons']
     
 
-    elif result_for_text['is_explicit'] == 'publish' and result_for_image['is_explicit']=='same' and result_for_text_from_image['is_explicit']=='publish':
-        return jsonify({'status': 'same', 'reason': [{'comment':result_for_text['reasons'], 'image':result_for_image['reasons'], 'text_in_image':result_for_text_from_image['reasons']}]}), 200
-    
+    id = generate_random_int_id()
+    # ЗАПИСЬ В БД
 
-    elif result_for_text['is_explicit'] == 'publish' and result_for_image['is_explicit']=='publish' and result_for_text_from_image['is_explicit']=='publish':
-        return jsonify({'status': 'publish', 'reason': [{'comment':result_for_text['reasons'], 'image':result_for_image['reasons'], 'text_in_image':result_for_text_from_image['reasons']}]}), 200
+    insert_data(id, temp_status, text, image_path, video_path, ', '.join(overall_reasons))
+    print('success added to BD')
 
+    view_table()
 
-        
-    # result_comment = detect_explicit_comment(text)
-    # print(result_comment)
+    return jsonify({'status': temp_status, 'id':id, 'reasons': overall_reasons}), 200
+                    # {'status': str, 'id':int, 'reasons': list}
 
-
-
-    if not data:
-        return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
-    
-    
-
-    
-
-    
-    return jsonify({'status': 'publish', 'reason': 'сомнительно но окэй'}), 200
+     
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -25,7 +25,7 @@ JSON_SPAM_COMMENT_SYSTEM_PROMPT = '''Твоя задача определять 
 
 Ответ:
 {
-    "status": True,
+    "status": true,
     "reasons": ["advertising", "appeals"]
 }
 
@@ -34,7 +34,7 @@ JSON_SPAM_COMMENT_SYSTEM_PROMPT = '''Твоя задача определять 
 
 Ответ:
 {
-    "status": False,
+    "status": false,
     "reasons": []
 }
 
@@ -43,7 +43,7 @@ JSON_SPAM_COMMENT_SYSTEM_PROMPT = '''Твоя задача определять 
 
 Ответ:
 {
-    "status": False,
+    "status": false,
     "reasons": []
 }
 '''
