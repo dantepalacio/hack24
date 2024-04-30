@@ -47,6 +47,19 @@ def detect_spam_comment(text: str) -> json:
     answer = response.choices[0].message.content
     return answer
 
+def transcript_text(audio_file_name):
+    audio_file= open(audio_file_name, "rb")
+    transcription = client.audio.transcriptions.create(
+        model="whisper-1", 
+        file=audio_file
+    )
+    print(transcription.text)
+    transcription_text = transcription.text
+    return transcription_text
+
+
+
+
 if __name__ == '__main__':
     # text = 'голосуйте за путина'
     # print(detect_explicit_comment(text))
