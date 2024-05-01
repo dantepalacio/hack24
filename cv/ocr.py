@@ -25,11 +25,5 @@ def get_text(path):
         answer = 0
 
 
-    if response.error.message:
-        raise Exception(
-            "{}\nЧТО-ТО С OCR "
-            "https://cloud.google.com/apis/design/errors".format(response.error.message)
-        )
-
     return {'text': answer}
 

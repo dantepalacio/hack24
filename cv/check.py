@@ -13,7 +13,10 @@ from utils.utils import explicit_content_check_from_image, explicit_content_chec
 
 
 
-def check_post(content: dict) -> bool:
+def check_post(content: dict) -> dict:
+    '''Функция для вызова всех функций проверок.
+        content: словарь с attachment публикации.
+    '''
     answer = {'text': None, 'image': None, 'video': None, 'audio': None}
     if content['text'] is not None:
         # print(f"text: {content['text']}")
