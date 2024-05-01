@@ -3,20 +3,25 @@ import sys
 
 from uuid import uuid4
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from cv.check import check_post
 from sqlite.db_operations import insert_data, get_post_id, get_table
 
-app = Flask(__name__,
-            static_url_path='', 
-            static_folder='static/',
-            template_folder='templates/')
+app = Flask(__name__)
 
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
+
+@app.route("/")
+def client():
+    return send_from_directory('static/', 'index.html')
+
+@app.route("/<path:path>")
+def base(path):
+    return send_from_directory('static/', path)
 
 
 def get_attachment_from_request(file):
@@ -43,7 +48,7 @@ def process_post_request():
     text = request.form.get('text')
     attachment = request.files.get("attachment")
     
-    if text is None and attachment is None:
+    if not text and attachment is None:
         return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
     
 
@@ -119,7 +124,7 @@ def process_post_request():
     id = get_post_id(temp_status, text, image_path, video_path, ', '.join(overall_reasons))
 
     return jsonify({'status': temp_status, 'id': id, 'reasons': overall_reasons}), 200
-                    # {'status': str, 'id':int, 'reasons': list}
+
 
 
 @app.route('/get_posts_request', methods=['GET'])
@@ -131,7 +136,7 @@ def get_posts_request():
     results = get_table()
     
     return jsonify({'results': results}), 200
-                    # {'status': str, 'id':int, 'reasons': list}
+
 
 
 if __name__ == '__main__':
