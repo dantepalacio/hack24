@@ -45,8 +45,13 @@ def process_post_request():
     
     if text is None and attachment is None:
         return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
+    
 
-    image_path, video_path = get_attachment_from_request(attachment)
+    if attachment is None:
+        image_path = video_path = None
+    
+    else:
+        image_path, video_path = get_attachment_from_request(attachment)
 
 
 
@@ -59,39 +64,58 @@ def process_post_request():
     answer = check_post(post_dict)
 
 
-    text_result = answer['text']
-    print(f'TEXT:{text_result}')
+    if answer['text'] is not None:
 
-    # TODO проверить что answer["image"] есть
+        text_result = answer['text']
+        print(f'TEXT:{text_result}')
 
-    overall_image_result = answer['image']
-    image_result = overall_image_result[0]
-    ocr_image_result = overall_image_result[1]
-    print(f'IMAGE:{image_result}')
-    print(f'OCR IMAGE:{ocr_image_result}')
+    else:
+        text_result = {'is_explicit': 'publish', 'reasons': []}
 
-    print()
-    overall_video_result = answer['video']
-    print(f'VIDEO:{overall_video_result[0]}')
-    print(f'VIDEO OCR:{overall_video_result[1]}')
-    
-    audio_result = answer['audio']
-    print(f'AUDIO FROM VIDEO:{audio_result}')
+    if answer['image'] is not None:
+
+        overall_image_result = answer['image']
+        image_result = overall_image_result[0]
+        ocr_image_result = overall_image_result[1]
+        print(f'IMAGE:{image_result}')
+        print(f'OCR IMAGE:{ocr_image_result}')
+
+    else:
+        overall_image_result = {'is_explicit': 'publish', 'reasons': []}
+
+
+    if answer['video'] is not None:
+        print()
+        overall_video_result = answer['video']
+        print(f'VIDEO:{overall_video_result[0]}')
+        print(f'VIDEO OCR:{overall_video_result[1]}')
+        
+        audio_result = answer['audio']
+        print(f'AUDIO FROM VIDEO:{audio_result}')
+
+    else:
+        overall_video_result = {'is_explicit': 'publish', 'reasons': []}
+        audio_result = {'is_explicit': 'publish', 'reasons': []}
 
 
     overall_reasons = []
     temp_status = 'publish'
     for res_key, res_val in answer.items():
-        for i in res_val:
-            if i['is_explicit'] == 'ban':
-                temp_status = 'ban'
-                overall_reasons += i['reasons']
-            elif i['is_explicit'] == 'same':
-                temp_status = 'same'
-                overall_reasons += i['reasons']
+        if res_val is not None:
+            for i in res_val:
+                if i['is_explicit'] == 'ban':
+                    temp_status = 'ban'
+                    overall_reasons += i['reasons']
+                elif i['is_explicit'] == 'same':
+                    temp_status = 'same'
+                    overall_reasons += i['reasons']
+        
+        else:
+            continue
     
 
     insert_data(temp_status, text, image_path, video_path, ', '.join(overall_reasons))
+
     id = get_post_id(temp_status, text, image_path, video_path, ', '.join(overall_reasons))
 
     return jsonify({'status': temp_status, 'id': id, 'reasons': overall_reasons}), 200
