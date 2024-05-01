@@ -38,12 +38,34 @@ def get_post_id(status: str, text: str, image_path: str, video_path: str, reason
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
 
-    cursor.execute('''SELECT id FROM posts WHERE status = ? AND text = ? AND file = ? AND video = ? AND reasons = ?''', (status, text, image_path, video_path, reasons))
-    id = cursor.fetchone()
+    search_params = {
+        "text": text,
+        "file": image_path,
+        "reasons": reasons,
+        "status": status,
+        "video": video_path
+    }
+
+    query = "SELECT id FROM posts WHERE "
+    conditions = []
+
+    for key, value in search_params.items():
+        if value is None:
+            conditions.append(f"{key} IS NULL")
+        else:
+            conditions.append(f"{key} = ?")
+
+    query += " AND ".join(conditions)
+
+    cursor.execute(query, [v for v in search_params.values() if v is not None])
+    result = cursor.fetchall()
+
+    # cursor.execute('''SELECT id FROM posts WHERE status = ? AND text = ? AND file = ? AND video = ? AND reasons = ?''', (status, text, image_path, video_path, reasons))
+    # id = cursor.fetchone()
 
     conn.close()
     
-    return id[0]
+    return result[0]
 
 def get_table():
     current_dir = os.path.dirname(os.path.abspath(__file__))
