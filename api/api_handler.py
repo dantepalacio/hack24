@@ -15,26 +15,36 @@ app = Flask(__name__)
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
+
+def get_attachment_from_request(file):
+    *_, extension = file.filename.split(".")
+    file_filename = f"{uuid4()}.{extension}"
+    file_path = f"{app.config['UPLOAD_FOLDER']}{file_filename}"
+    file.save(file_path)
+
+    image_path = None
+    video_path = None
+    if file.mimetype.startswith("image/"):
+        image_path = file_path
+    elif file.mimetype.startswith("video/"):
+        video_path = file_path
+    return image_path, video_path
+
+
 @app.route('/process_post_request', methods=['POST'])
 def process_post_request():
 
     if not request:
         return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
-    
-
-    image = request.files['attachment']
-    image_filename = str(uuid4())+".jpg"
-    image_path = f'uploads/{image_filename}'
-    image.save(image_path)
-
-
-    video = request.files['video']
-    video_filename = str(uuid4())+".mp4"
-    video_path = f'uploads/{video_filename}'
-    video.save(video_path)
-
 
     text = request.form.get('text')
+    attachment = request.files.get("attachment")
+    
+    if text is None and attachment is None:
+        return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
+
+    image_path, video_path = get_attachment_from_request(attachment)
+
 
 
     post_dict = {
@@ -48,6 +58,8 @@ def process_post_request():
 
     text_result = answer['text']
     print(f'TEXT:{text_result}')
+
+    # TODO проверить что answer["image"] есть
 
     overall_image_result = answer['image']
     image_result = overall_image_result[0]
