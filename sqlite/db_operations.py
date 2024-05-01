@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import time
 
 
 def insert_data(status: str, text: str, file: str, video: str, reasons: str):
@@ -10,7 +11,7 @@ def insert_data(status: str, text: str, file: str, video: str, reasons: str):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
     
-    cursor.execute('''INSERT INTO posts (status, text, file, video, reasons) VALUES (?, ?, ?, ?, ?)''', (status, text, file, video, reasons,))
+    cursor.execute('''INSERT INTO posts (status, text, file, video, reasons, unix_timestamp) VALUES (?, ?, ?, ?, ?, ?)''', (status, text, file, video, reasons, int(time.time())))
     
     conn.commit()
     conn.close()
@@ -60,9 +61,6 @@ def get_post_id(status: str, text: str, image_path: str, video_path: str, reason
     cursor.execute(query, [v for v in search_params.values() if v is not None])
     result = cursor.fetchone()
 
-    # cursor.execute('''SELECT id FROM posts WHERE status = ? AND text = ? AND file = ? AND video = ? AND reasons = ?''', (status, text, image_path, video_path, reasons))
-    # id = cursor.fetchone()
-
     conn.close()
     
     return result[0]
@@ -82,7 +80,7 @@ def get_table():
     results = []
 
     for row in rows:
-        results.append({'id': row[0], 'status': row[1], 'comment': row[2], 'image': row[3], 'video': row[4], 'reasons': row[5]})
+        results.append({'id': row[0], 'status': row[1], 'comment': row[2], 'image': row[3], 'video': row[4], 'reasons': row[5], 'unix_timestamp': row[6]})
     
     conn.close()
 
@@ -93,13 +91,14 @@ if __name__ == "__main__":
     conn = sqlite3.connect('posts.db')
     cursor = conn.cursor()
 
-    # cursor.execute('''CREATE TABLE posts (id INTEGER PRIMARY KEY, status CHAR, text CHAR, file CHAR, video CHAR, reasons CHAR)''')
+    # cursor.execute('''CREATE TABLE posts (id INTEGER PRIMARY KEY, status CHAR, text CHAR, file CHAR, video CHAR, reasons CHAR, unix_timestamp INTEGER)''')
 
     # cursor.execute('''INSERT INTO data (id, status, text, file, video, reasons) VALUES (?, ?, ?, ?, ?, ?)''', (1, 'ban', 'text', '1.jpg', '1.mp4', 'poshel nahui'))
     # insert_data('publish54511', 'text124124124', '2.jpg5345345', '2.mp45345345', 'norm534534534')
     # view_table()
     # print(get_post_id('publish54511', 'text124124124', '2.jpg5345345', '2.mp45345345', 'norm534534534'))
-    print(get_table())
+    # delete_data(1)
+    # print(get_table())
 
     conn.commit()
     conn.close()
