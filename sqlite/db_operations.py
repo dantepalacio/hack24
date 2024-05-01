@@ -91,14 +91,6 @@ if __name__ == "__main__":
     conn = sqlite3.connect('posts.db')
     cursor = conn.cursor()
 
-    # cursor.execute('''CREATE TABLE posts (id INTEGER PRIMARY KEY, status CHAR, text CHAR, file CHAR, video CHAR, reasons CHAR, unix_timestamp INTEGER)''')
-
-    # cursor.execute('''INSERT INTO data (id, status, text, file, video, reasons) VALUES (?, ?, ?, ?, ?, ?)''', (1, 'ban', 'text', '1.jpg', '1.mp4', 'poshel nahui'))
-    # insert_data('publish54511', 'text124124124', '2.jpg5345345', '2.mp45345345', 'norm534534534')
-    # view_table()
-    # print(get_post_id('publish54511', 'text124124124', '2.jpg5345345', '2.mp45345345', 'norm534534534'))
-    # delete_data(1)
-    # print(get_table())
 
     conn.commit()
     conn.close()
