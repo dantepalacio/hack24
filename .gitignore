@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+static/
 *.py[cod]
 *$py.class
 
@@ -15,6 +16,7 @@ __pycache__/
 *.mj2
 *.avi
 *.db
+posts.db
 *.wav
 # C extensions
 *.so
