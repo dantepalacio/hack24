@@ -58,7 +58,7 @@ def get_post_id(status: str, text: str, image_path: str, video_path: str, reason
     query += " AND ".join(conditions)
 
     cursor.execute(query, [v for v in search_params.values() if v is not None])
-    result = cursor.fetchall()
+    result = cursor.fetchone()
 
     # cursor.execute('''SELECT id FROM posts WHERE status = ? AND text = ? AND file = ? AND video = ? AND reasons = ?''', (status, text, image_path, video_path, reasons))
     # id = cursor.fetchone()
