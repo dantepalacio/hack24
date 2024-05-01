@@ -67,8 +67,6 @@ def process_post_request():
     print(f'AUDIO FROM VIDEO:{audio_result}')
 
 
-
-
     overall_reasons = []
     temp_status = 'publish'
     for res_key, res_val in answer.items():
