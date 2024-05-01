@@ -12,11 +12,9 @@ from generation.prompts.system_prompt import JSON_EXPLICIT_COMMENT_SYSTEM_PROMPT
 
 load_dotenv()
 
-
 client = openai.OpenAI()
 
 def detect_explicit_comment(text:str) -> json:
-    # print(f'text: {text}')
     '''Функция для определения запрещенных комментариев, принимает текст комментария
         text: Текст комментария
     '''
@@ -50,6 +48,7 @@ def detect_spam_comment(text: str) -> json:
     answer = json.loads(answer)
     return answer
 
+
 def transcript_text(audio_file_name):
     audio_file= open(audio_file_name, "rb")
     transcription = client.audio.transcriptions.create(
@@ -59,7 +58,6 @@ def transcript_text(audio_file_name):
     transcription_text = transcription.text
     print(transcription_text)
     return transcription_text
-
 
 
 def get_text_from_audio(path):
