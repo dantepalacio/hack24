@@ -8,10 +8,13 @@ from flask import Flask, request, jsonify
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from cv.check import check_post
-from utils.utils import generate_random_int_id
-from sqlite.db_operations import insert_data, view_table
+from sqlite.db_operations import insert_data, get_post_id, get_table
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='', 
+            static_folder='static/',
+            template_folder='templates/')
+
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
@@ -90,18 +93,24 @@ def process_post_request():
                 overall_reasons += i['reasons']
     
 
-    id = generate_random_int_id()
-    # ЗАПИСЬ В БД
+    insert_data(temp_status, text, image_path, video_path, ', '.join(overall_reasons))
+    id = get_post_id(temp_status, text, image_path, video_path, ', '.join(overall_reasons))
 
-    insert_data(id, temp_status, text, image_path, video_path, ', '.join(overall_reasons))
-    print('success added to BD')
-
-    view_table()
-
-    return jsonify({'status': temp_status, 'id':id, 'reasons': overall_reasons}), 200
+    return jsonify({'status': temp_status, 'id': id, 'reasons': overall_reasons}), 200
                     # {'status': str, 'id':int, 'reasons': list}
 
-     
+
+@app.route('/get_posts_request', methods=['GET'])
+def get_posts_request():
+    
+    if not request:
+        return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
+    
+    results = get_table()
+    
+    return jsonify({'results': results}), 200
+                    # {'status': str, 'id':int, 'reasons': list}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
