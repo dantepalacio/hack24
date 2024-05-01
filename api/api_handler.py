@@ -11,7 +11,11 @@ from cv.check import check_post
 from utils.utils import generate_random_int_id
 from sqlite.db_operations import insert_data, view_table
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='', 
+            static_folder='static/',
+            template_folder='templates/')
+
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
