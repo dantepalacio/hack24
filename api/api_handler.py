@@ -24,7 +24,14 @@ def base(path):
     return send_from_directory('static/', path)
 
 
-def get_attachment_from_request(file):
+def get_attachment_from_request():
+    file = request.files.get("attachment")
+    print(f'AAA\n{file}')
+    if file is None:
+        return None, None
+    if len(file.filename) < 1:
+        return None, None
+    
     *_, extension = file.filename.split(".")
     file_filename = f"{uuid4()}.{extension}"
     file_path = f"{app.config['UPLOAD_FOLDER']}{file_filename}"
@@ -46,18 +53,11 @@ def process_post_request():
         return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
 
     text = request.form.get('text')
-    attachment = request.files.get("attachment")
-    
-    if not text and attachment is None:
+    image_path, video_path = get_attachment_from_request()
+    attachment = image_path or video_path
+
+    if text is None and attachment is None:
         return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400
-    
-
-    if attachment is None:
-        image_path = video_path = None
-    
-    else:
-        image_path, video_path = get_attachment_from_request(attachment)
-
 
 
     post_dict = {
@@ -65,6 +65,9 @@ def process_post_request():
         "image": image_path,
         "video": video_path
     }
+    print(post_dict)
+
+    return jsonify({'id':1,'status': 'same', 'reason': '[]'}), 200, {"Access-Control-Allow-Origin":"*"}
 
     answer = check_post(post_dict)
 
@@ -140,4 +143,4 @@ def get_posts_request():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
