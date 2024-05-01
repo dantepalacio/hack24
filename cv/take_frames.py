@@ -12,30 +12,25 @@ from utils.utils import explicit_content_check_from_text, explicit_content_check
 
 
 def detect_explicit_content_from_video(path):
-    # Открываем видеофайл
+
     video_capture = cv2.VideoCapture(path)
 
-    # Проверяем, открылся ли файл
+
     if not video_capture.isOpened():
         print("Ошибка при открытии видеофайла")
         exit()
 
-    # Создаем пустой список для хранения кадров
     frames = []
 
-    # Читаем видео по кадрам
     while True:
-        # Считываем кадр
+
         ret, frame = video_capture.read()
 
-        # Проверяем, успешно ли считали кадр
         if not ret:
             break
 
-        # Добавляем кадр в список
         frames.append(frame)
 
-    # Освобождаем объект захвата видео
     video_capture.release()
 
     analyze_frames = frames[::30]

@@ -10,7 +10,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from cv.check import check_post
 from sqlite.db_operations import insert_data, get_post_id, get_table
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_url_path='', 
+            static_folder='static/',
+            template_folder='templates/')
+
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
