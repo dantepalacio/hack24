@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify, send_from_directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from cv.check import check_post
-from sqlite.db_operations import insert_data, get_post_id, get_table
+from sqlite.db_operations import insert_data, get_post_id, get_table, get_post_by_id, set_action
 from mail_configuration import send_mail, configure_mail
 from utils.utils import add_to_csv
 
@@ -37,26 +37,31 @@ def get_uploads(path):
 # }
 HEADERS = {"Access-Control-Allow-Origin":"*"}
 
-@app.route('/eval', methods=['POST'])
-def get_eval():
-    if not request:
-        return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400, HEADERS
-    
-    data = request.json
-    print(data)
 
-    #publication =  select form sqll
+def rate_post(id, action):
+    publication_from_db =  get_post_by_id(id)
 
     publication = {
-        "text": '1',
-        "image": '2',
-        "video": '3'
+        'text': publication_from_db['comment'],
+        'image': publication_from_db['image'],
+        'video': publication_from_db['video']
     }
 
-    action = data['action']
-    
     add_to_csv(publication, action)
-    return '200'
+    set_action(action,id)
+
+
+@app.route('/rate', methods=['GET'])
+def get_eval():
+    if not request:
+        return "400", 400, HEADERS
+    action = request.args.get("action")
+    id = request.args.get("id")
+    if action is None or id is None:
+        return "400", 400, HEADERS
+
+    rate_post(id, action)
+    return '<script>window.close()</script>',HEADERS
 
 
     

@@ -3,7 +3,7 @@ import os
 import time
 
 
-def insert_data(status: str, text: str, file: str, video: str, reasons: str):
+def insert_data(status: str, text: str, file: str, video: str, reasons: str, action: int):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     db_folder = os.path.join(current_dir, '../sqlite')
     db_file = os.path.join(db_folder, 'posts.db')
@@ -11,7 +11,7 @@ def insert_data(status: str, text: str, file: str, video: str, reasons: str):
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
     
-    cursor.execute('''INSERT INTO posts (status, text, file, video, reasons, unix_timestamp) VALUES (?, ?, ?, ?, ?, ?)''', (status, text, file, video, reasons, int(time.time())))
+    cursor.execute('''INSERT INTO posts (status, text, file, video, reasons, unix_timestamp, action) VALUES (?, ?, ?, ?, ?, ?, ?)''', (status, text, file, video, reasons, int(time.time()), action))
     
     conn.commit()
     conn.close()
@@ -44,7 +44,7 @@ def get_post_id(status: str, text: str, image_path: str, video_path: str, reason
         "file": image_path,
         "reasons": reasons,
         "status": status,
-        "video": video_path
+        "video": video_path,
     }
 
     query = "SELECT id FROM posts WHERE "
@@ -80,7 +80,7 @@ def get_table():
     results = []
 
     for row in rows:
-        results.append({'id': row[0], 'status': row[1], 'comment': row[2], 'image': row[3], 'video': row[4], 'reasons': row[5], 'unix_timestamp': row[6]})
+        results.append({'id': row[0], 'status': row[1], 'comment': row[2], 'image': row[3], 'video': row[4], 'reasons': row[5], 'unix_timestamp': row[6], 'action': row[7]})
     
     conn.close()
 
@@ -91,6 +91,8 @@ if __name__ == "__main__":
     conn = sqlite3.connect('posts.db')
     cursor = conn.cursor()
 
+    # cursor.execute('''CREATE TABLE posts (id INTEGER PRIMARY KEY, status CHAR, text CHAR, file CHAR, video CHAR, reasons CHAR, unix_timestamp INTEGER, action INTEGER)''')
+    # cursor.execute('''INSERT INTO posts (status, text, file, video, reasons, unix_timestamp, action) VALUES (?, ?, ?, ?, ?, ?, ?)''', ('publish', 'hello', None, None, '', int(time.time()), 1))
 
     conn.commit()
     conn.close()
