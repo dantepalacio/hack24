@@ -20,33 +20,46 @@ def configure_mail(app):
     mail = Mail(app)
     return mail
 
-
+API_PATH = "http://217.151.230.141:5000"
 def send_mail(mail, temp_status:str, body:dict, text:str=None, image_path:str=None, video_path:str=None):
+    id = body["id"]
     if text is not None:
         if temp_status == 'ban':
             thesis = 'Мы заблокировали запрещенный контент'
-            body_message = f'Публикация #{body["id"]} была заблокирована. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n{text}'
+            body_message = f'Публикация #{id} была заблокирована. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n{text}'
         elif temp_status == 'same':
             thesis = 'Опубликован сомнительный контент'
-            body_message = f'Публикация #{body["id"]} была помечена, как сомнительный контент. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n{text}'
+            body_message = f'Публикация #{id} была помечена, как сомнительный контент. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n{text}'
         mail_message = Message(
                 thesis, 
                 sender =   HOST_EMAIL, 
                 recipients = ['anuar.beisenbaev2003@gmail.com'])
-        mail_message.body = body_message
     
     else:
         if temp_status == 'ban':
             thesis = 'Мы заблокировали запрещенный контент'
-            body_message = f'Публикация #{body["id"]} была заблокирована. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n'
+            body_message = f'Публикация #{id} была заблокирована. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n'
         elif temp_status == 'same':
             thesis = 'Опубликован сомнительный контент'
-            body_message = f'Публикация #{body["id"]} была помечена, как сомнительный контент. \n\n Причины блокировки: {body["reasons"]}\n\n Содержание публикации:\n'
+            body_message = f'Публикация #{id} была помечена, как сомнительный контент.\n\nПричины блокировки: {body["reasons"]}\n\n Содержание публикации:\n'
         mail_message = Message(
                 thesis, 
                 sender =   HOST_EMAIL, 
                 recipients = ['anuar.beisenbaev2003@gmail.com'])
-        mail_message.body = body_message
+        
+    buttonStyle = """color: white;
+display: inline-block;
+border-radius: 8px;
+padding: 8px;
+text-decoration: none;"""
+    
+    mail_message.body = body_message
+    mail_message.html = body_message.replace("\n\n", "<br><br>") + f"""
+    <div style="margin-top: 20px">
+        <a style='{buttonStyle}background-color: #05a573;' href='{API_PATH}/rate?id={id}&action=like'>Правильно</a>
+        <a style='{buttonStyle}background-color: #f40b0b;' href='{API_PATH}/rate?id={id}&action=dislike'>Неправильно</a>
+    </div>
+    """
     
 
     if image_path is not None:
