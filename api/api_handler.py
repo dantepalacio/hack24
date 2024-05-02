@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from cv.check import check_post
 from sqlite.db_operations import insert_data, get_post_id, get_table
 from mail_configuration import send_mail, configure_mail
-
+from utils.utils import add_to_csv
 
 app = Flask(__name__)
 mail = configure_mail(app)
@@ -30,7 +30,37 @@ def get_uploads(path):
     print(path)
     return send_from_directory('uploads/', path)
 
+
+# {
+#     action: like|dislike,
+#     id: int
+# }
 HEADERS = {"Access-Control-Allow-Origin":"*"}
+
+@app.route('/eval', methods=['POST'])
+def get_eval():
+    if not request:
+        return jsonify({'status': 'ban', 'reason': 'Пустое тело'}), 400, HEADERS
+    
+    data = request.json
+    print(data)
+
+    #publication =  select form sqll
+
+    publication = {
+        "text": '1',
+        "image": '2',
+        "video": '3'
+    }
+
+    action = data['action']
+    
+    add_to_csv(publication, action)
+    return '200'
+
+
+    
+
 
 def get_attachment_from_request():
     file = request.files.get("attachment")

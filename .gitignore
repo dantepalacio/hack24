@@ -4,6 +4,7 @@ static/
 uploads/
 *.py[cod]
 *$py.class
+*.csv
 
 *.jpg
 *.mp4
