@@ -3,7 +3,7 @@ import os
 import time
 
 
-def insert_data(status: str, text: str, file: str, video: str, reasons: str, action: int):
+def insert_data(status: str, text: str, file: str, video: str, reasons: str, action: int=None):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     db_folder = os.path.join(current_dir, '../sqlite')
     db_file = os.path.join(db_folder, 'posts.db')
@@ -65,6 +65,25 @@ def get_post_id(status: str, text: str, image_path: str, video_path: str, reason
     
     return result[0]
 
+
+def get_post_by_id(id:int) -> dict:
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_folder = os.path.join(current_dir, '../sqlite')
+    db_file = os.path.join(db_folder, 'posts.db')
+
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+
+    cursor.execute('SELECT * FROM posts WHERE id=?', (id,))
+    result = cursor.fetchone()
+
+    conn.close()
+
+    answer = ({'id': result[0], 'status': result[1], 'comment': result[2], 'image': result[3], 'video': result[4], 'reasons': result[5], 'unix_timestamp': result[6], 'action': result[7]})
+    
+    return answer
+
 def get_table():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     db_folder = os.path.join(current_dir, '../sqlite')
@@ -87,9 +106,31 @@ def get_table():
     return results
 
 
+ACTIONS = ['dislike','like']
+def set_action(action,id):
+    print('AAAA')
+    print(action)
+    print(id)
+    print(ACTIONS.index(action))
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    db_folder = os.path.join(current_dir, '../sqlite')
+    db_file = os.path.join(db_folder, 'posts.db')
+
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    cursor.execute('''UPDATE posts SET action=? WHERE id=?''',(ACTIONS.index(action),int(id)))
+
+    conn.commit()
+    conn.close()
+
+
 if __name__ == "__main__":
     conn = sqlite3.connect('posts.db')
     cursor = conn.cursor()
+
+    # cursor.execute('''DROP TABLE posts''')
 
     # cursor.execute('''CREATE TABLE posts (id INTEGER PRIMARY KEY, status CHAR, text CHAR, file CHAR, video CHAR, reasons CHAR, unix_timestamp INTEGER, action INTEGER)''')
     # cursor.execute('''INSERT INTO posts (status, text, file, video, reasons, unix_timestamp, action) VALUES (?, ?, ?, ?, ?, ?, ?)''', ('publish', 'hello', None, None, '', int(time.time()), 1))
