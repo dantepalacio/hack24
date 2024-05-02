@@ -33,7 +33,7 @@ def detect_explicit_content_from_video(path):
 
     video_capture.release()
 
-    analyze_frames = frames[::15]
+    analyze_frames = frames[::30]
     print(len(frames))
     print(len(analyze_frames))
 
