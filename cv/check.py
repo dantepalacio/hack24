@@ -49,7 +49,7 @@ def check_post(content: dict) -> dict:
         else:
             result_for_text_from_image = {'is_explicit': 'publish', 'reasons': []}
 
-        # print(f'EXPLICIT CONTENT IN TEXT: {comment_result}\nEXPLICIT CONTENT IN IMAGE: {result_for_image}\nEXPLICIT CONTENT IN TEXT FROM IMAGE: {result_for_text_from_image}')
+        print(f'EXPLICIT CONTENT IN TEXT: {comment_result}\nEXPLICIT CONTENT IN IMAGE: {result_for_image}\nEXPLICIT CONTENT IN TEXT FROM IMAGE: {result_for_text_from_image}')
 
         answer['image'] = [result_for_image, result_for_text_from_image]
     
