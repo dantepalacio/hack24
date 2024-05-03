@@ -5,3 +5,20 @@
 
 ### 5 case
 Блокировка запрещенного контента
+
+### Создание виртуальной среды:
+
+python -m venv venv
+
+### Установка зависимостей
+
+pip install -r requirements.txt
+
+### Установка токена OpenAI в .env по аналогии с .envexample
+
+### GCP https://cloud.google.com/?hl=ru
+
+
+
+
+Запуск модуля /api/api_handler.py
