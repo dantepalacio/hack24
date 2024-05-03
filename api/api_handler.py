@@ -4,20 +4,24 @@ import sys
 from uuid import uuid4
 
 from flask import Flask, request, jsonify, send_from_directory
+from flasgger import Swagger
+from flasgger.utils import swag_from
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from cv.check import check_post
-from sqlite.db_operations import insert_data, get_post_id, get_table, get_post_by_id, set_action
-from mail_configuration import send_mail, configure_mail
+from sqlite.db_operations import insert_data, get_post_id, get_table, get_post_by_id, set_action, change_status
+from mail_configuration import send_mail, configure_mail, send_appelation_mail
 from utils.utils import add_to_csv
 
 app = Flask(__name__)
+swagger = Swagger(app, template_file='swagger/index.yml')
 mail = configure_mail(app)
 
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 @app.route("/")
+@swag_from('swagger/index.yml')
 def client():
     return send_from_directory('static/', 'index.html')
 
@@ -188,6 +192,34 @@ def get_posts_request():
     
     return jsonify({'results': results}), 200, HEADERS
 
+
+@app.route('/send_appelation', methods=['POST'])
+def send_appelation():
+    if not request:
+        return "400", 400, HEADERS
+
+    id = request.form.get('id')
+
+    user_message = request.form.get('text')
+
+    post_data = get_post_by_id(int(id))
+
+    send_appelation_mail(mail, id, user_message, post_data)
+
+    return '200', 200, HEADERS
+
+
+@app.route('/change_post_status', methods=['GET'])
+def change_post_status():
+    if not request:
+        return "400", 400, HEADERS
+
+    new_status = request.args.get("new_status")
+    id = request.args.get("id")
+
+    change_status(int(id), new_status)
+
+    return '<script>window.close()</script>',HEADERS
 
 
 if __name__ == '__main__':
