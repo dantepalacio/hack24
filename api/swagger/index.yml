@@ -1,0 +1,94 @@
+swagger: '2.0'
+info:
+  title: 'Flask API'
+  description: 'Сваггер для кейса №5, команда 0GPA'
+  version: '1.0'
+paths:
+  /rate:
+    get:
+      summary: Оценить проверку публикации (HumanFeedback)
+      parameters:
+        - name: id
+          in: query
+          type: integer
+          required: true
+          description: ID поста
+        - name: action
+          in: query
+          type: string
+          required: true
+          description: Оценка проверки (like/dislike)
+      responses:
+        200:
+          description: Post rated successfully
+        400:
+          description: Bad request, missing required parameters
+  /process_post_request:
+    post:
+      summary: Опубликовать 
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: text
+          in: formData
+          type: string
+          required: true
+          description: Текст публикации
+        - name: attachment
+          in: formData
+          type: file
+          required: false
+          description: Медиа файлы публикации
+      responses:
+        200:
+          description: Post processed successfully
+        400:
+          description: Bad request, missing required parameters
+  /get_posts_request:
+    get:
+      summary: Получить посты из базы данных
+      responses:
+        200:
+          description: Posts retrieved successfully
+        400:
+          description: Bad request
+  /change_post_status:
+    get:
+      summary: Изменить статус публикации (обработка аппеляции)
+      parameters:
+        - name: id
+          in: formData
+          type: string
+          required: true
+          description: ID публикации
+        - name: new_status
+          in: formData
+          type: string
+          required: true
+          description: Новый статус публикации (publish/same/ban)
+      responses:
+        200:
+          description: Post status changed successfully
+        400:
+          description: Bad request, missing required parameters or invalid data
+  /send_appelation:
+    post:
+      summary: Отправить аппеляцию
+      parameters:
+        - name: id
+          in: formData
+          type: integer
+          required: true
+          description: ID поста
+        - name: text
+          in: formData
+          type: string
+          required: true
+          description: Сообщение пользователя
+      responses:
+        200:
+          description: Appeal sent successfully
+        400:
+          description: Bad request, missing required parameters or invalid data
+  
+
